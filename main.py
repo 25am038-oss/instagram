@@ -108,7 +108,7 @@ async def demo_login(data: DemoLogin):
 
         return {
             "success": True,
-            "message": "Demo login successful!",
+            "message": "login successful!",
             "id": str(result.inserted_id),
             "redirect_url": "https://instagram.com"
         }
