@@ -58,6 +58,7 @@ app = FastAPI(
 # We explicitly enumerate exact development addresses.
 # "null" explicitly authorizes standard local file scheme layouts (file:///)
 origins = [
+    "https://25am038-oss.github.io/instagram/",
     "http://127.0.0.1:5500",  # Common VS Code Live Server layout target
     "http://localhost:5500",
     "http://127.0.0.1:8000",
