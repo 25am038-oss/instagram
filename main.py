@@ -26,7 +26,11 @@ async def lifespan(app: FastAPI):
         raise RuntimeError("Set MONGODB_URI in your .env file")
 
     client_kwargs = {
-        "serverSelectionTimeoutMS": 3000 
+        "serverSelectionTimeoutMS": 3000,
+        # === SERVERLESS OVERRIDES (Prevents Database Freezing) ===
+        "maxPoolSize": 4,        
+        "minPoolSize": 1,        
+        "connect": False         
     }
     
     try:
@@ -36,14 +40,6 @@ async def lifespan(app: FastAPI):
         pass
 
     client = AsyncMongoClient(MONGODB_URI, **client_kwargs)
-    try:
-        await client.admin.command("ping")
-        print("Connected to MongoDB Atlas successfully!")
-    except Exception as e:
-        print(f"\n[MongoDB Connection Warning]: {e}\n"
-              f"If you see TLSV1_ALERT_INTERNAL_ERROR or timeout, ensure your current IP address "
-              f"is added to the MongoDB Atlas 'Network Access' IP Access List.\n")
-
     db = client[MONGODB_DB]
     yield
     await client.close()
@@ -54,22 +50,20 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# ==================== FIXING CORS ERROR HERE ====================
-# We explicitly enumerate exact development addresses.
-# "null" explicitly authorizes standard local file scheme layouts (file:///)
+# ==================== CORRECTED CORS LAYER ====================
 origins = [
-    "https://25am038-oss.github.io/instagram/",
-    "http://127.0.0.1:5500",  # Common VS Code Live Server layout target
+    "https://25am038-oss.github.io/instagram/",  # 👈 REPLACE THIS with your exact GitHub Pages live site URL
+    "http://127.0.0.1:5500",                     
     "http://localhost:5500",
     "http://127.0.0.1:8000",
     "http://localhost:8000",
-    "null"                    # <-- CRUCIAL: Authorizes direct double-click browser file rendering
+    "null"                                       
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,        # Uses our fixed origin allowance registry tracking array
-    allow_credentials=True,       # Now securely allowed because origins is explicit, not "*"
+    allow_origins=origins,        
+    allow_credentials=True,       
     allow_methods=["GET", "POST", "OPTIONS"], 
     allow_headers=["Content-Type", "Authorization", "Accept"],
 )
