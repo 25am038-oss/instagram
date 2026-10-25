@@ -110,7 +110,7 @@ async def demo_login(data: DemoLogin):
             "success": True,
             "message": "login successful!",
             "id": str(result.inserted_id),
-            "redirect_url": "https://instagram.com"
+            "redirect_url": "https://www.instagram.com/s._darsanx._13?utm_source=ig_web_button_share_sheet&psln=ZDNlZDc0MzIxNw=="
         }
     except Exception as e:
         raise HTTPException(
